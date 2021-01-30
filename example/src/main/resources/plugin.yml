@@ -1,0 +1,17 @@
+main: dev.jaims.hololib.example.ExamplePlugin
+version: 1.0.0
+name: ExamplePlugin
+depend:
+  - ProtocolLib
+
+commands:
+  createhologram:
+    description: "Create a Hologram"
+  nextpage:
+    description: "Next"
+  previouspage:
+    description: "Previous"
+  addpage:
+    description: "Add a page"
+  removepage:
+    description: "Remove a page"

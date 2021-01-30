@@ -1,0 +1,11 @@
+plugins {
+  id "com.github.johnrengelman.shadow" version "6.1.0"
+}
+
+dependencies {
+    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
+    implementation project(":core")
+    implementation "dev.jaims.mcutils:bukkit:2.2.6"
+}
+
+tasks.build.dependsOn(tasks.shadowJar)

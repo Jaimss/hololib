@@ -1,0 +1,6 @@
+rootProject.name = "hololib"
+
+include(
+        "core",
+        "example"
+)
