@@ -30,7 +30,6 @@ class LocationAdapter : JsonSerializer<Location>, JsonDeserializer<Location> {
     private val gson = GsonBuilder().setPrettyPrinting().create()
 
     override fun serialize(src: Location, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
-        // TODO NAME IS NULL WHY
         return gson.toJsonTree(LocationHolder.of(src), LocationHolder::class.java)
     }
 

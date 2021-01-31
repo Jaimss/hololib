@@ -6,7 +6,7 @@ allprojects {
     apply plugin: "org.jetbrains.kotlin.jvm"
 
     group "dev.jaims.hololib"
-    version "0.0.9"
+    version "0.0.10"
 
     repositories {
         mavenCentral()

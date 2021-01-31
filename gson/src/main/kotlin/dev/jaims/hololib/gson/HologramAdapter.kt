@@ -5,8 +5,8 @@ import dev.jaims.hololib.core.Hologram
 import org.bukkit.Location
 import java.lang.reflect.Type
 
-class HologramAdapter : JsonDeserializer<Hologram> {
-    private val gson: Gson = GsonBuilder().registerTypeAdapter(Location::class.java, LocationAdapter()).create()
+class HologramAdapter : JsonDeserializer<Hologram>, JsonSerializer<Hologram> {
+    private val gson: Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().registerTypeAdapter(Location::class.java, LocationAdapter()).create()
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext?): Hologram {
         val hologram = gson.fromJson(json, Hologram::class.java)
@@ -17,6 +17,10 @@ class HologramAdapter : JsonDeserializer<Hologram> {
             }
         }
         return hologram
+    }
+
+    override fun serialize(src: Hologram?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+        return gson.toJsonTree(src, Hologram::class.java)
     }
 
 }
