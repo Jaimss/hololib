@@ -1,7 +1,7 @@
 package dev.jaims.hololib.core
 
+import dev.jaims.hololib.core.util.HOLOGRAM_LINE_TRANSFORM
 import dev.jaims.hololib.core.util.LINE_SPACE
-import dev.jaims.hololib.core.util.TRANSFORM
 import dev.jaims.hololib.core.util.sendHidePackets
 import dev.jaims.hololib.core.util.sendShowPackets
 import org.bukkit.Bukkit
@@ -43,10 +43,17 @@ data class HologramPage internal constructor(
         get() = viewersData.mapNotNull { Bukkit.getPlayer(it) }.toSet()
 
     /**
-     * Clear all the lines of a given [HologramPage]
+     * Completely despawn a hologram page.
      */
-    fun clear() {
+    fun despawn() {
         viewersData.clear()
+        linesData.forEach(HologramLine::despawn)
+    }
+
+    /**
+     * Clear all the lines of a hologram page.
+     */
+    fun clearLines() {
         linesData.forEach(HologramLine::despawn)
     }
 
@@ -55,7 +62,7 @@ data class HologramPage internal constructor(
      *
      * @param transform the transformation that should occur on each line. Can be used to parse placeholders, player things, colorize, etc.
      */
-    fun update(transform: (player: Player, content: String) -> String = TRANSFORM) {
+    fun update(transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM) {
         val oldViewers = viewingPlayers
         hide(*viewingPlayers.toTypedArray())
         show(*oldViewers.toTypedArray(), transform = transform)
@@ -67,9 +74,9 @@ data class HologramPage internal constructor(
      * @param index the index to insert the line at. All following lines will be moved "down" one.
      * @param content the content of the line.
      */
-    fun insertLine(index: Int, content: String, transform: (player: Player, content: String) -> String = TRANSFORM) {
+    fun insertLine(index: Int, content: String, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM) {
         linesData.add(index, HologramLine(content, location.clone().subtract(0.0, LINE_SPACE * index, 0.0)))
-        linesData.filterIndexed { i, _ -> i >= index }.forEach(HologramLine::teleportDown)
+        linesData.filterIndexed { i, _ -> i > index }.forEach(HologramLine::teleportDown)
         update(transform)
     }
 
@@ -81,7 +88,7 @@ data class HologramPage internal constructor(
      *
      * @return true if the operation was successful, false if not. Might be false if there is no line at the given index.
      */
-    fun setLine(index: Int, content: String, transform: (player: Player, content: String) -> String = TRANSFORM): Boolean {
+    fun setLine(index: Int, content: String, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM): Boolean {
         val line = linesData.getOrNull(index) ?: return false
         line.contentData = content
         update(transform)
@@ -95,13 +102,13 @@ data class HologramPage internal constructor(
      *
      * @return a [HologramLine] that was removed or null if nothing was removed.
      */
-    fun removeLine(index: Int, transform: (player: Player, content: String) -> String = TRANSFORM): HologramLine? {
+    fun removeLine(index: Int, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM): HologramLine? {
         val removed = linesData.getOrNull(index) ?: return null
-        linesData.filterIndexed { i, _ -> i > index }.forEach(HologramLine::teleportUp)
+        linesData.filterIndexed { i, _ -> i >= index }.forEach(HologramLine::teleportUp)
         removed.despawn()
         linesData.remove(removed)
         update(transform)
-        return null
+        return removed
     }
 
     /**
@@ -109,9 +116,9 @@ data class HologramPage internal constructor(
      *
      * @param contents the lines to add
      */
-    fun addLines(vararg contents: String, transform: (player: Player, content: String) -> String = TRANSFORM) {
+    fun addLines(vararg contents: String, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM) {
         contents.forEach { content ->
-            insertLine(lines.size, content, transform)
+            insertLine(linesData.size, content, transform)
         }
         update(transform)
     }
@@ -122,8 +129,8 @@ data class HologramPage internal constructor(
      * @param player the players to show this page to.
      * @param transform the transformation on the line that should apply to each player. This can be used for placeholders, etc.
      */
-    internal fun show(vararg player: Player, transform: (player: Player, content: String) -> String = TRANSFORM) {
-        lines.forEach { line ->
+    internal fun show(vararg player: Player, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM) {
+        linesData.forEach { line ->
             player.forEach { player ->
                 sendShowPackets(line, player, transform)
                 viewersData.add(player.uniqueId)
@@ -137,7 +144,7 @@ data class HologramPage internal constructor(
      * @param players the players to hide it from
      */
     internal fun hide(vararg players: Player) {
-        lines.forEach { line ->
+        linesData.forEach { line ->
             players.forEach { player ->
                 sendHidePackets(line, player)
                 viewersData.remove(player.uniqueId)

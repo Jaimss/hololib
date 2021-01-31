@@ -1,6 +1,6 @@
 package dev.jaims.hololib.core
 
-import dev.jaims.hololib.core.util.TRANSFORM
+import dev.jaims.hololib.core.util.HOLOGRAM_LINE_TRANSFORM
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 data class Hologram internal constructor(
-    private var nameData: String,
+    var name: String,
     private var locationData: Location,
     private val pageData: MutableList<HologramPage> = mutableListOf()
 ) {
@@ -22,13 +22,6 @@ data class Hologram internal constructor(
         get() = pageData.toList()
 
     /**
-     * The name of the [Hologram]. Acts as a getter for the private [nameData]
-     * The data value is private because the logic to change it is more complicated then just mutating the variable.
-     */
-    val name: String
-        get() = nameData
-
-    /**
      * The location of this [Hologram]. Acts as a getter for the private [locationData]
      * The data value is private because the logic to change it is more complicated then just mutating the variable.
      */
@@ -39,8 +32,15 @@ data class Hologram internal constructor(
      * Update the whole hologram.
      * @param transform the transformation that should occur on each line. Can be used to parse placeholders, colorize the line, etc.
      */
-    fun update(transform: (player: Player, content: String) -> String = TRANSFORM) {
+    fun update(transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM) {
         pageData.forEach { page -> page.update(transform) }
+    }
+
+    /**
+     * Despawn a hologram.
+     */
+    fun despawn() {
+        pageData.forEach(HologramPage::despawn)
     }
 
     /**
@@ -60,9 +60,9 @@ data class Hologram internal constructor(
      *
      * @return true if success, false if fail. can fail if the index doesn't exist in the pages
      */
-    fun setPage(index: Int, vararg lines: String, transform: (player: Player, content: String) -> String = TRANSFORM): Boolean {
+    fun setPage(index: Int, vararg lines: String, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM): Boolean {
         val page = pageData.getOrNull(index) ?: return false
-        page.clear()
+        page.clearLines()
         page.addLines(*lines)
         update(transform)
         return true
@@ -77,7 +77,7 @@ data class Hologram internal constructor(
     fun insertPage(
         index: Int,
         vararg lines: String,
-        transform: (player: Player, content: String) -> String = TRANSFORM
+        transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM
     ): HologramPage {
         val page = buildPage(location) { addLines(*lines, transform = transform) }
         pageData.add(index, page)
@@ -92,9 +92,9 @@ data class Hologram internal constructor(
      *
      * @return the [HologramPage] removed or null if the page didn't exist at the given [index]
      */
-    fun removePage(index: Int, transform: (player: Player, content: String) -> String = TRANSFORM): HologramPage? {
+    fun removePage(index: Int, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM): HologramPage? {
         val removed = pageData.getOrNull(index) ?: return null
-        removed.clear()
+        removed.despawn()
         pageData.remove(removed)
         update(transform)
         return removed

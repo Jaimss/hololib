@@ -29,14 +29,14 @@ data class HologramLine internal constructor(internal var contentData: String, i
      * Move a line of an armor stand up
      */
     internal fun teleportUp() {
-        locationData.add(0.0, LINE_SPACE, 0.0)
+        locationData.y = locationData.y + LINE_SPACE
     }
 
     /**
      * Move a line down the line space.
      */
     internal fun teleportDown() {
-        locationData.subtract(0.0, LINE_SPACE, 0.0)
+        locationData.y = locationData.y - LINE_SPACE
     }
 
     /**
