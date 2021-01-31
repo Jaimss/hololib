@@ -32,6 +32,12 @@ data class HologramLine internal constructor(
     val entityId = (Math.random() * Int.MAX_VALUE).toInt()
 
     /**
+     * An separate entity that is centered on the hologram line (for clicking). This way if they click the actual line, they will be clicking an entity.
+     */
+    @Expose
+    val centeredEntityId = (Math.random() * Int.MAX_VALUE).toInt()
+
+    /**
      * Move a line of an armor stand up
      */
     internal fun teleportUp() {
@@ -63,13 +69,9 @@ enum class LineType(val type: Int) {
 
     @SerializedName("0")
     @Expose
-    PREVIOUS_PAGE(0),
+    PAGE_SWITCH(0),
 
     @SerializedName("1")
-    @Expose
-    NEXT_PAGE(1),
-
-    @SerializedName("2")
     @Expose
     DEFAULT(2)
 

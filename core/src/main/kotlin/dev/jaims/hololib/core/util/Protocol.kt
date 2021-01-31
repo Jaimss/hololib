@@ -20,7 +20,7 @@ internal fun sendHidePackets(line: HologramLine, player: Player) {
     // https://wiki.vg/Protocol#Destroy_Entities
     val packet = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
     with(packet) {
-        integerArrays.write(0, listOf(line.entityId).toIntArray())
+        integerArrays.write(0, listOf(line.entityId, line.centeredEntityId).toIntArray())
     }
     protocolManager.sendServerPacket(player, packet)
 }
@@ -40,10 +40,26 @@ internal fun sendShowPackets(line: HologramLine, player: Player) {
         float.writeDefaults()
         shorts.writeDefaults()
     }
+    val centeredPacket = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING)
+    with(centeredPacket) {
+        integers.write(0, line.centeredEntityId)
+            .write(1, 1) // armor stand type
+        doubles.write(0, line.location.x)
+            .write(1, line.location.y + 1)
+            .write(2, line.location.z)
+        uuiDs.writeDefaults()
+        float.writeDefaults()
+        shorts.writeDefaults()
+    }
     // set the meta data packet
     val metaDataPacket = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA)
     with(metaDataPacket) {
         integers.write(0, line.entityId)
+        watchableCollectionModifier.writeDefaults()
+    }
+    val centeredMetaDataPacket = protocolManager.createPacket(PacketType.Play.Server.ENTITY_METADATA)
+    with(centeredMetaDataPacket) {
+        integers.write(0, line.centeredEntityId)
         watchableCollectionModifier.writeDefaults()
     }
     // create a data watcher
@@ -59,9 +75,18 @@ internal fun sendShowPackets(line: HologramLine, player: Player) {
             Optional.of(WrappedChatComponent.fromChatMessage(HololibManager.instance.lineTransformation(player, line.content))[0].handle))
         setObject(nameVisibleIndex, true)
     }
+    val centeredWatcher = WrappedDataWatcher(metaDataPacket.watchableCollectionModifier.read(0))
+    with(centeredWatcher) {
+        // set it to invisibe
+        val invisibleIndex = WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte::class.javaObjectType))
+        setObject(invisibleIndex, 0x20.toByte())
+    }
     // write the modifiers
     metaDataPacket.watchableCollectionModifier.write(0, watcher.watchableObjects)
+    centeredMetaDataPacket.watchableCollectionModifier.write(0, centeredWatcher.watchableObjects)
     // send the packets
     protocolManager.sendServerPacket(player, packet)
     protocolManager.sendServerPacket(player, metaDataPacket)
+    protocolManager.sendServerPacket(player, centeredPacket)
+    protocolManager.sendServerPacket(player, centeredMetaDataPacket)
 }

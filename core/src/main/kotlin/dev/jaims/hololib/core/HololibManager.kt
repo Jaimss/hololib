@@ -30,7 +30,7 @@ class HololibManager(val plugin: JavaPlugin) {
                     cachedHolograms.forEach { holo ->
                         holo.pages.forEach { page ->
                             page.lines.forEach { line ->
-                                if (line.entityId == entityId) hologram = line.parent
+                                if (line.entityId == entityId || line.centeredEntityId == entityId) hologram = line.parent
                             }
                         }
                     }
@@ -86,13 +86,13 @@ class HololibManager(val plugin: JavaPlugin) {
      * Set the default arrow left. You can change this for each individual hologram, this is just the default.
      * This will be put before the [defaultArrowRight]. You can use this to changethe message that shows at the bottom.
      */
-    var defaultArrowLeft: String = "&7&o(Left Click) &r&a««  "
+    var defaultArrowLeft: String = "&7&o(Left Click) &r&a«« "
 
     /**
      * Set the default arrow right. You can change this for each individual hologram, this is just the default.
      * This will be put after the [defaultArrowRight]. You can use this to change the message that shows at the bottom.
      */
-    var defaultArrowRight: String = "  &a»» &7&o(Right Click)"
+    var defaultArrowRight: String = " &a»» &7&o(Right Click)"
 
     /**
      * Set the space between each [HologramLine]. 0.25 is the default and is fine in most cases.
