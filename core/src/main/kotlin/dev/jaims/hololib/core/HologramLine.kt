@@ -1,6 +1,7 @@
 package dev.jaims.hololib.core
 
 import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import dev.jaims.hololib.core.util.sendHidePackets
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -8,7 +9,8 @@ import org.bukkit.Location
 data class HologramLine internal constructor(
     var parent: Hologram,
     @Expose internal var contentData: String,
-    @Expose internal var index: Int
+    @Expose internal var index: Int,
+    @Expose internal var lineType: LineType
 ) {
     /**
      * Acts as a getter for the private [contentData]
@@ -51,5 +53,24 @@ data class HologramLine internal constructor(
             sendHidePackets(this, it)
         }
     }
+
+}
+
+/**
+ * A little enum for the type of [HologramLine]. Helpful in determining if the click was to go to the previous page / next page.
+ */
+enum class LineType(val type: Int) {
+
+    @SerializedName("0")
+    @Expose
+    PREVIOUS_PAGE(0),
+
+    @SerializedName("1")
+    @Expose
+    NEXT_PAGE(1),
+
+    @SerializedName("2")
+    @Expose
+    DEFAULT(2)
 
 }

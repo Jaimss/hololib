@@ -6,6 +6,7 @@ import dev.jaims.hololib.core.util.sendShowPackets
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.*
+import javax.sound.sampled.Line
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "NAME_SHADOWING")
 data class HologramPage internal constructor(
@@ -71,8 +72,8 @@ data class HologramPage internal constructor(
      * @param index the index to insert the line at. All following lines will be moved "down" one.
      * @param content the content of the line.
      */
-    fun insertLine(index: Int, content: String) {
-        linesData.add(index, HologramLine(parent, content, index))
+    fun insertLine(index: Int, content: String, type: LineType = LineType.DEFAULT) {
+        linesData.add(index, HologramLine(parent, content, index, type))
         linesData.filterIndexed { i, _ -> i > index }.forEach(HologramLine::teleportDown)
         update()
     }
@@ -115,12 +116,12 @@ data class HologramPage internal constructor(
      *
      * @param contents the lines to add
      */
-    fun addLines(vararg contents: String) {
+    fun addLines(vararg contents: String, type: LineType = LineType.DEFAULT) {
         contents.forEach { content ->
             if (hasArrows) {
-                insertLine(linesData.size - 1, content)
+                insertLine(linesData.size - 1, content, type)
             } else {
-                insertLine(linesData.size, content)
+                insertLine(linesData.size, content, type)
             }
         }
         update()

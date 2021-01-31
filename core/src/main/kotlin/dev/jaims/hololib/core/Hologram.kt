@@ -14,6 +14,10 @@ data class Hologram internal constructor(
     @Expose private val pageData: MutableList<HologramPage> = mutableListOf()
 ) {
 
+    init {
+        HololibManager.instance.cachedHolograms.add(this)
+    }
+
     /**
      * Set this to false if you want to remove the page arrows.
      */
@@ -74,6 +78,7 @@ data class Hologram internal constructor(
      */
     fun despawn() {
         pageData.forEach(HologramPage::despawn)
+        HololibManager.instance.cachedHolograms.remove(this)
     }
 
     /**
