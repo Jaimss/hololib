@@ -1,6 +1,9 @@
 package dev.jaims.hololib.core
 
+import dev.jaims.hololib.core.util.HAS_PAGE_ARROWS_DEFAULT
 import dev.jaims.hololib.core.util.HOLOGRAM_LINE_TRANSFORM
+import dev.jaims.hololib.core.util.LEFT_PAGE_ARROW_DEFAULT
+import dev.jaims.hololib.core.util.RIGHT_PAGE_ARROW_DEFAULT
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -13,6 +16,21 @@ data class Hologram internal constructor(
     private var locationData: Location,
     private val pageData: MutableList<HologramPage> = mutableListOf()
 ) {
+
+    /**
+     * Set this to false if you want to remove the page arrows.
+     */
+    val hasPageArrows: Boolean = HAS_PAGE_ARROWS_DEFAULT
+
+    /**
+     * The left page arrow.
+     */
+    val leftArrow: String = LEFT_PAGE_ARROW_DEFAULT
+
+    /**
+     * The right page arrow.
+     */
+    val rightArrow: String = RIGHT_PAGE_ARROW_DEFAULT
 
     /**
      * The [HologramPage]s of the Hologram. Acts as a getter for the private [pageData]
@@ -33,7 +51,23 @@ data class Hologram internal constructor(
      * @param transform the transformation that should occur on each line. Can be used to parse placeholders, colorize the line, etc.
      */
     fun update(transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM) {
-        pageData.forEach { page -> page.update(transform) }
+        pageData.forEach { page ->
+            if (pages.size > 1) {
+                if (hasPageArrows && !page.hasArrows) {
+                    page.addLines("$leftArrow$rightArrow")
+                    page.hasArrows = true
+                }
+                if (page.hasArrows && !hasPageArrows) {
+                    page.removeLine(page.lines.size)
+                    page.hasArrows = false
+                }
+            }
+            if (pages.size <= 1 && page.hasArrows) {
+                page.removeLine(page.lines.size - 1)
+                page.hasArrows = false
+            }
+            page.update(transform)
+        }
     }
 
     /**
@@ -79,7 +113,8 @@ data class Hologram internal constructor(
         vararg lines: String,
         transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM
     ): HologramPage {
-        val page = buildPage(location) { addLines(*lines, transform = transform) }
+        val page =
+            HologramPage(location, mutableListOf()).apply { addLines(*lines, transform = transform) }
         pageData.add(index, page)
         update(transform)
         return page
@@ -105,7 +140,7 @@ data class Hologram internal constructor(
      *
      * @return the index of the page, or null if they can't see a page.
      */
-    fun getCurrentPage(player: Player): Int? {
+    fun getCurrentPageIndex(player: Player): Int? {
         val index = pageData.indexOfFirst { it.viewers.contains(player.uniqueId) }
         if (index == -1) return null
         return index
@@ -115,7 +150,7 @@ data class Hologram internal constructor(
      * A method to hide all the pages. Is smart to call this before show a page to a player.
      */
     fun hideAllPages(player: Player) {
-        val pageIndex = getCurrentPage(player) ?: return
+        val pageIndex = getCurrentPageIndex(player) ?: return
         pages.getOrNull(pageIndex)?.hide(player)
     }
 
@@ -127,7 +162,7 @@ data class Hologram internal constructor(
      */
     fun showNextPage(vararg players: Player) {
         players.forEach { player ->
-            val currentPageIndex = getCurrentPage(player) ?: run {
+            val currentPageIndex = getCurrentPageIndex(player) ?: run {
                 pages.firstOrNull()?.show(player)
                 return@forEach
             }
@@ -144,7 +179,7 @@ data class Hologram internal constructor(
      */
     fun showPreviousPage(vararg players: Player) {
         players.forEach { player ->
-            val currentPageIndex = getCurrentPage(player) ?: return@forEach
+            val currentPageIndex = getCurrentPageIndex(player) ?: return@forEach
             pages.getOrNull(currentPageIndex)?.hide(player) ?: return@forEach
             pageData.getOrNull(currentPageIndex - 1)?.show(player)
         }

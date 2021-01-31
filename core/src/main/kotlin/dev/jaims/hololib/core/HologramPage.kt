@@ -9,21 +9,18 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.*
 
-/**
- * A method to create a page.
- *
- * @param location should be the location of the hologram itself.
- */
-internal fun buildPage(location: Location, block: HologramPage.() -> Unit): HologramPage {
-    return HologramPage(location, mutableListOf()).apply(block)
-}
-
 @Suppress("MemberVisibilityCanBePrivate", "unused", "NAME_SHADOWING")
 data class HologramPage internal constructor(
     private val location: Location,
     private val linesData: MutableList<HologramLine>,
     private val viewersData: MutableSet<UUID> = mutableSetOf()
 ) {
+
+    /**
+     * True if the hologram has an arrow line.
+     */
+    var hasArrows: Boolean = false
+        internal set
 
     /**
      * The [HologramLine]s of this page. Acts as a getter for the private [linesData]
@@ -86,9 +83,11 @@ data class HologramPage internal constructor(
      * @param index the index of the line
      * @param content the content of the line
      *
-     * @return true if the operation was successful, false if not. Might be false if there is no line at the given index.
+     * @return true if the operation was successful, false if not. Might be false if there is no line at the given index. Will also be false
+     * if you try to set the index that contains the page arrows.
      */
     fun setLine(index: Int, content: String, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM): Boolean {
+        if (hasArrows && index == linesData.size - 1) return false
         val line = linesData.getOrNull(index) ?: return false
         line.contentData = content
         update(transform)
@@ -118,7 +117,11 @@ data class HologramPage internal constructor(
      */
     fun addLines(vararg contents: String, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM) {
         contents.forEach { content ->
-            insertLine(linesData.size, content, transform)
+            if (hasArrows) {
+                insertLine(linesData.size - 1, content)
+            } else {
+                insertLine(linesData.size, content)
+            }
         }
         update(transform)
     }
