@@ -1,7 +1,7 @@
 package dev.jaims.hololib.example
 
 import dev.jaims.hololib.core.Hologram
-import dev.jaims.hololib.core.util.HOLOGRAM_LINE_TRANSFORM
+import dev.jaims.hololib.core.HololibManager
 import dev.jaims.hololib.example.command.*
 import dev.jaims.mcutils.bukkit.util.colorize
 import org.bukkit.plugin.java.JavaPlugin
@@ -14,7 +14,8 @@ class ExamplePlugin : JavaPlugin() {
     override fun onEnable() {
         logger.info("Starting Example Holograms Plugin")
 
-        HOLOGRAM_LINE_TRANSFORM = { player, content -> content.colorize(player) }
+        val m = HololibManager(this)
+        m.lineTransformation = { player, content -> content.colorize(player) }
 
         AddPage(this)
         CreateHologram(this)
@@ -22,5 +23,4 @@ class ExamplePlugin : JavaPlugin() {
         PreviousPage(this)
         RemovePage(this)
     }
-
 }

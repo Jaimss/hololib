@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer
 import com.comphenix.protocol.wrappers.WrappedChatComponent
 import com.comphenix.protocol.wrappers.WrappedDataWatcher
 import dev.jaims.hololib.core.HologramLine
+import dev.jaims.hololib.core.HololibManager
 import org.bukkit.entity.Player
 import java.util.*
 
@@ -27,7 +28,7 @@ internal fun sendHidePackets(line: HologramLine, player: Player) {
 /**
  * Send the packets to show an armor stand to a player.
  */
-internal fun sendShowPackets(line: HologramLine, player: Player, transform: (Player, String) -> String) {
+internal fun sendShowPackets(line: HologramLine, player: Player) {
     val packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING)
     with(packet) {
         integers.write(0, line.entityId)
@@ -54,7 +55,8 @@ internal fun sendShowPackets(line: HologramLine, player: Player, transform: (Pla
         // set the name
         val nameValueIndex = WrappedDataWatcher.WrappedDataWatcherObject(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true))
         val nameVisibleIndex = WrappedDataWatcher.WrappedDataWatcherObject(3, WrappedDataWatcher.Registry.get(Boolean::class.javaObjectType))
-        setObject(nameValueIndex, Optional.of(WrappedChatComponent.fromChatMessage(transform(player, line.content))[0].handle))
+        setObject(nameValueIndex,
+            Optional.of(WrappedChatComponent.fromChatMessage(HololibManager.instance.lineTransformation(player, line.content))[0].handle))
         setObject(nameVisibleIndex, true)
     }
     // write the modifiers

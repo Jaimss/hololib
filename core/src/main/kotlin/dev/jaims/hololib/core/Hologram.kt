@@ -1,9 +1,6 @@
 package dev.jaims.hololib.core
 
-import dev.jaims.hololib.core.util.HAS_PAGE_ARROWS_DEFAULT
-import dev.jaims.hololib.core.util.HOLOGRAM_LINE_TRANSFORM
-import dev.jaims.hololib.core.util.LEFT_PAGE_ARROW_DEFAULT
-import dev.jaims.hololib.core.util.RIGHT_PAGE_ARROW_DEFAULT
+import com.google.gson.annotations.Expose
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -12,25 +9,28 @@ import org.bukkit.entity.Player
  */
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 data class Hologram internal constructor(
-    var name: String,
-    private var locationData: Location,
-    private val pageData: MutableList<HologramPage> = mutableListOf()
+    @Expose var name: String,
+    @Expose private var locationData: Location,
+    @Expose private val pageData: MutableList<HologramPage> = mutableListOf()
 ) {
 
     /**
      * Set this to false if you want to remove the page arrows.
      */
-    val hasPageArrows: Boolean = HAS_PAGE_ARROWS_DEFAULT
+    @Expose
+    var hasPageArrows: Boolean = HololibManager.instance.defaultHasArrows
 
     /**
      * The left page arrow.
      */
-    val leftArrow: String = LEFT_PAGE_ARROW_DEFAULT
+    @Expose
+    var leftArrow: String = HololibManager.instance.defaultArrowLeft
 
     /**
      * The right page arrow.
      */
-    val rightArrow: String = RIGHT_PAGE_ARROW_DEFAULT
+    @Expose
+    var rightArrow: String = HololibManager.instance.defaultArrowRight
 
     /**
      * The [HologramPage]s of the Hologram. Acts as a getter for the private [pageData]
@@ -48,9 +48,8 @@ data class Hologram internal constructor(
 
     /**
      * Update the whole hologram.
-     * @param transform the transformation that should occur on each line. Can be used to parse placeholders, colorize the line, etc.
      */
-    fun update(transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM) {
+    fun update() {
         pageData.forEach { page ->
             if (pages.size > 1) {
                 if (hasPageArrows && !page.hasArrows) {
@@ -66,7 +65,7 @@ data class Hologram internal constructor(
                 page.removeLine(page.lines.size - 1)
                 page.hasArrows = false
             }
-            page.update(transform)
+            page.update()
         }
     }
 
@@ -94,11 +93,11 @@ data class Hologram internal constructor(
      *
      * @return true if success, false if fail. can fail if the index doesn't exist in the pages
      */
-    fun setPage(index: Int, vararg lines: String, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM): Boolean {
+    fun setPage(index: Int, vararg lines: String): Boolean {
         val page = pageData.getOrNull(index) ?: return false
         page.clearLines()
         page.addLines(*lines)
-        update(transform)
+        update()
         return true
     }
 
@@ -108,15 +107,11 @@ data class Hologram internal constructor(
      * @param index the index of this new page.
      * @param lines the lines of the page that you are inserting.
      */
-    fun insertPage(
-        index: Int,
-        vararg lines: String,
-        transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM
-    ): HologramPage {
+    fun insertPage(index: Int, vararg lines: String): HologramPage {
         val page =
-            HologramPage(location, mutableListOf()).apply { addLines(*lines, transform = transform) }
+            HologramPage(this, mutableListOf()).apply { addLines(*lines) }
         pageData.add(index, page)
-        update(transform)
+        update()
         return page
     }
 
@@ -127,11 +122,11 @@ data class Hologram internal constructor(
      *
      * @return the [HologramPage] removed or null if the page didn't exist at the given [index]
      */
-    fun removePage(index: Int, transform: (player: Player, content: String) -> String = HOLOGRAM_LINE_TRANSFORM): HologramPage? {
+    fun removePage(index: Int): HologramPage? {
         val removed = pageData.getOrNull(index) ?: return null
         removed.despawn()
         pageData.remove(removed)
-        update(transform)
+        update()
         return removed
     }
 
