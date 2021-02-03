@@ -51,6 +51,14 @@ data class Hologram internal constructor(
         get() = locationData
 
     /**
+     * Teleport a hologram to a new location.
+     */
+    fun teleport(location: Location) {
+        locationData = location
+        update()
+    }
+
+    /**
      * Update the whole hologram.
      */
     fun update() {
