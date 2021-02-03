@@ -1,3 +1,5 @@
+[![Stable Release](https://img.shields.io/github/v/release/jaimss/hololib?color=brightgreen&label=stable)](https://github.com/Jaimss/hololib/releases) 
+[![Latest Release](https://img.shields.io/github/v/release/jaimss/hololib?color=ffaa00&include_prereleases&label=snapshot)](https://github.com/Jaimss/hololib/releases)
 # HoloLib
 A Holograms Library for Spigot Development.
 
