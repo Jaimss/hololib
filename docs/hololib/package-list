@@ -1,0 +1,8 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+dev.jaims.hololib.core
+dev.jaims.hololib.core.builder
+dev.jaims.hololib.core.event
+dev.jaims.hololib.gson
+

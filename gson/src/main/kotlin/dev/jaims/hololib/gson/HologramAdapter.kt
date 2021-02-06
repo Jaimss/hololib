@@ -5,6 +5,9 @@ import dev.jaims.hololib.core.Hologram
 import org.bukkit.Location
 import java.lang.reflect.Type
 
+/**
+ * A Serializer/Deserializer for a [Hologram]
+ */
 class HologramAdapter : JsonDeserializer<Hologram>, JsonSerializer<Hologram> {
     private val gson: Gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().registerTypeAdapter(Location::class.java, LocationAdapter()).create()
 
