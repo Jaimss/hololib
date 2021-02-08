@@ -29,6 +29,7 @@ internal fun sendHidePackets(line: HologramLine, player: Player) {
  * Send the packets to show an armor stand to a player.
  */
 internal fun sendShowPackets(line: HologramLine, player: Player) {
+    if (player.location.world.name != line.location.world.name) return
     val packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING)
     with(packet) {
         integers.write(0, line.entityId)

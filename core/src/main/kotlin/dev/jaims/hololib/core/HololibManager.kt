@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.EnumWrappers
 import dev.jaims.hololib.core.event.HologramClickEvent
+import dev.jaims.hololib.core.listener.WorldSwitchEventListener
 import dev.jaims.hololib.core.util.protocolManager
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
@@ -19,6 +20,7 @@ class HololibManager(val plugin: JavaPlugin) {
 
     init {
         instance = this
+        plugin.server.pluginManager.registerEvents(WorldSwitchEventListener(this), plugin)
         protocolManager.addPacketListener(
             object : PacketAdapter(plugin, PacketType.Play.Client.USE_ENTITY) {
                 override fun onPacketReceiving(event: PacketEvent) {
@@ -64,6 +66,11 @@ class HololibManager(val plugin: JavaPlugin) {
      * If a hologram is removed from here certain library features may not work like calling a click event.
      */
     val cachedHolograms: MutableList<Hologram> = mutableListOf()
+
+    /**
+     * A predicate to determine if a player can see a given hologram. This is checked in the world switch event.
+     */
+    val showHologramPredicate: (Player, Hologram) -> Boolean = { _, _ -> true }
 
     /**
      * A transformation is what happens to every line whenever the [Hologram] is [Hologram.update]d. This allows
