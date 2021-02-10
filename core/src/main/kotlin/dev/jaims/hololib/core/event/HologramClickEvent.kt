@@ -26,7 +26,11 @@ class HologramClickEvent(
     val packetEvent: PacketEvent
 ) : Event(true), Cancellable {
     companion object {
+        @JvmStatic
         val HANDLERS_LIST = HandlerList()
+
+        @JvmStatic
+        fun getHandlerList() = HANDLERS_LIST
     }
 
     private var isCancelled = false
