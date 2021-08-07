@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
-    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT"
     implementation project(":core")
-    implementation "dev.jaims.mcutils:bukkit:2.2.6"
+    implementation "dev.jaims.mcutils:bukkit:2.2.11"
 }
 
 tasks.build.dependsOn(tasks.shadowJar)

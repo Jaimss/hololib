@@ -16,21 +16,20 @@ allprojects {
     repositories {
         mavenCentral()
         maven { url "https://repo.jaims.dev/repository/all/" }
+        maven { url "https://papermc.io/repo/repository/maven-public/" }
     }
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib"
+        // implementation group: "it.unimi.dsi", name: "fastutil", version: "8.2.2"
     }
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
 
     // kotlin options
     compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "15"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "15"
     }
 }
 

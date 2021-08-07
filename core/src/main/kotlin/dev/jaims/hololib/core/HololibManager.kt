@@ -25,14 +25,15 @@ class HololibManager(val plugin: JavaPlugin) {
             object : PacketAdapter(plugin, PacketType.Play.Client.USE_ENTITY) {
                 override fun onPacketReceiving(event: PacketEvent) {
                     // get some data
-                    val clickType = event.packet.entityUseActions.read(0)
+                    val clickType = event.packet.enumEntityUseActions.read(0).action
                     val entityId = event.packet.integers.read(0)
                     var hologram: Hologram? = null
                     // get the correct hologram
                     cachedHolograms.forEach { holo ->
                         holo.pages.forEach { page ->
                             page.lines.forEach { line ->
-                                if (line.entityId == entityId || line.centeredEntityId == entityId) hologram = line.parent
+                                if (line.entityId == entityId || line.centeredEntityId == entityId) hologram =
+                                    line.parent
                             }
                         }
                     }
@@ -51,7 +52,9 @@ class HololibManager(val plugin: JavaPlugin) {
                             if (hologram!!.getCurrentPageIndex(event.player) != 0) hologram!!.showPreviousPage(event.player)
                         }
                         EnumWrappers.EntityUseAction.INTERACT_AT -> {
-                            if (hologram!!.getCurrentPageIndex(event.player) != hologram!!.pages.size - 1) hologram!!.showNextPage(event.player)
+                            if (hologram!!.getCurrentPageIndex(event.player) != hologram!!.pages.size - 1) hologram!!.showNextPage(
+                                event.player
+                            )
                         }
                         else -> {
                         }

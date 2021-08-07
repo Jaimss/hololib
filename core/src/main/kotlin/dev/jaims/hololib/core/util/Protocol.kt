@@ -20,7 +20,7 @@ internal fun sendHidePackets(line: HologramLine, player: Player) {
     // https://wiki.vg/Protocol#Destroy_Entities
     val packet = PacketContainer(PacketType.Play.Server.ENTITY_DESTROY)
     with(packet) {
-        integerArrays.write(0, listOf(line.entityId, line.centeredEntityId).toIntArray())
+        intLists.write(0, listOf(line.entityId, line.centeredEntityId))
     }
     protocolManager.sendServerPacket(player, packet)
 }
@@ -29,7 +29,9 @@ internal fun sendHidePackets(line: HologramLine, player: Player) {
  * Send the packets to show an armor stand to a player.
  */
 internal fun sendShowPackets(line: HologramLine, player: Player) {
+    println("${line.content} before")
     if (player.location.world.name != line.location.world.name) return
+    println("${line.content} after")
     val packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING)
     with(packet) {
         integers.write(0, line.entityId)
@@ -64,22 +66,39 @@ internal fun sendShowPackets(line: HologramLine, player: Player) {
         watchableCollectionModifier.writeDefaults()
     }
     // create a data watcher
-    val watcher = WrappedDataWatcher(metaDataPacket.watchableCollectionModifier.read(0))
+    //val watcher = WrappedDataWatcher(metaDataPacket.watchableCollectionModifier.read(0))
+    val watcher = WrappedDataWatcher()
     with(watcher) {
         // set it to invisibe
-        val invisibleIndex = WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte::class.javaObjectType))
+        val invisibleIndex =
+            WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte::class.javaObjectType))
         setObject(invisibleIndex, 0x20.toByte())
         // set the name
-        val nameValueIndex = WrappedDataWatcher.WrappedDataWatcherObject(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true))
-        val nameVisibleIndex = WrappedDataWatcher.WrappedDataWatcherObject(3, WrappedDataWatcher.Registry.get(Boolean::class.javaObjectType))
-        setObject(nameValueIndex,
-            Optional.of(WrappedChatComponent.fromChatMessage(HololibManager.instance.lineTransformation(player, line.content))[0].handle))
+        val nameValueIndex =
+            WrappedDataWatcher.WrappedDataWatcherObject(2, WrappedDataWatcher.Registry.getChatComponentSerializer(true))
+        val nameVisibleIndex = WrappedDataWatcher.WrappedDataWatcherObject(
+            3,
+            WrappedDataWatcher.Registry.get(Boolean::class.javaObjectType)
+        )
+        setObject(
+            nameValueIndex,
+            Optional.of(
+                WrappedChatComponent.fromChatMessage(
+                    HololibManager.instance.lineTransformation(
+                        player,
+                        line.content
+                    )
+                )[0].handle
+            )
+        )
         setObject(nameVisibleIndex, true)
     }
-    val centeredWatcher = WrappedDataWatcher(metaDataPacket.watchableCollectionModifier.read(0))
+    // val centeredWatcher = WrappedDataWatcher(metaDataPacket.watchableCollectionModifier.read(0))
+    val centeredWatcher = WrappedDataWatcher()
     with(centeredWatcher) {
         // set it to invisibe
-        val invisibleIndex = WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte::class.javaObjectType))
+        val invisibleIndex =
+            WrappedDataWatcher.WrappedDataWatcherObject(0, WrappedDataWatcher.Registry.get(Byte::class.javaObjectType))
         setObject(invisibleIndex, 0x20.toByte())
     }
     // write the modifiers
