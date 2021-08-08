@@ -66,8 +66,8 @@ internal fun sendShowPackets(line: HologramLine, player: Player) {
         watchableCollectionModifier.writeDefaults()
     }
     // create a data watcher
-    //val watcher = WrappedDataWatcher(metaDataPacket.watchableCollectionModifier.read(0))
-    val watcher = WrappedDataWatcher()
+    val watcher = WrappedDataWatcher(metaDataPacket.watchableCollectionModifier.read(0))
+    // val watcher = WrappedDataWatcher()
     with(watcher) {
         // set it to invisibe
         val invisibleIndex =
@@ -93,8 +93,8 @@ internal fun sendShowPackets(line: HologramLine, player: Player) {
         )
         setObject(nameVisibleIndex, true)
     }
-    // val centeredWatcher = WrappedDataWatcher(metaDataPacket.watchableCollectionModifier.read(0))
-    val centeredWatcher = WrappedDataWatcher()
+    val centeredWatcher = WrappedDataWatcher(centeredMetaDataPacket.watchableCollectionModifier.read(0))
+    // val centeredWatcher = WrappedDataWatcher()
     with(centeredWatcher) {
         // set it to invisibe
         val invisibleIndex =
