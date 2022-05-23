@@ -29,11 +29,8 @@ internal fun sendHidePackets(line: HologramLine, player: Player) {
  * Send the packets to show an armor stand to a player.
  */
 internal fun sendShowPackets(line: HologramLine, player: Player) {
-    println("Line id = ${line.entityId}")
-    println("Line centered id = ${line.centeredEntityId}")
     if (player.location.world.name != line.location.world.name) return
     val packet = protocolManager.createPacket(PacketType.Play.Server.SPAWN_ENTITY_LIVING)
-    println("Location Coords = ${line.location.x}, ${line.location.y}, ${line.location.z}, ${line.location.world}")
     with(packet) {
         integers.write(0, line.entityId)
             .write(1, 1) // armor stand type
