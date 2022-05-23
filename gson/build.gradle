@@ -26,6 +26,6 @@ publishing {
 
 dependencies {
     compileOnly project(":core")
-    compileOnly "com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT"
-    compileOnly "com.google.code.gson:gson:2.8.6"
+    compileOnly "io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT"
+    compileOnly "com.google.code.gson:gson:2.8.9"
 }

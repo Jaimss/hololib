@@ -90,7 +90,7 @@ data class Hologram internal constructor(
     }
 
     /**
-     * Add a a page to the [Hologram].
+     * Add a page to the [Hologram].
      *
      * @param lines the variable amount of lines the page will contain.
      */

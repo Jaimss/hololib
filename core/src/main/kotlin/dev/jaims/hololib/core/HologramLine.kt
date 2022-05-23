@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import dev.jaims.hololib.core.util.sendHidePackets
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import java.util.UUID
 
 data class HologramLine internal constructor(
     var parent: Hologram,
@@ -14,16 +15,28 @@ data class HologramLine internal constructor(
 ) {
     /**
      * Acts as a getter for the private [contentData]
-     * The data value is private because the logic to change it is more complicated then just mutating the variable.
+     * The data value is private because the logic to change it is more complicated than just mutating the variable.
      */
     val content: String
         get() = contentData
 
     /**
-     * The data value is private because the logic to change it is more complicated then just mutating the variable.
+     * The data value is private because the logic to change it is more complicated than just mutating the variable.
      */
     val location: Location
         get() = parent.location.clone().subtract(0.0, HololibManager.instance.lineSpace * index, 0.0)
+
+    /**
+     * Generate a UUID
+     */
+    @Expose
+    val uniqueId = UUID.randomUUID()
+
+    /**
+     * Generate the Centered Entity UUID
+     */
+    @Expose
+    val centeredUniqueID = UUID.randomUUID()
 
     /**
      * Generate an entity ID.
@@ -32,7 +45,8 @@ data class HologramLine internal constructor(
     val entityId = (Math.random() * Int.MAX_VALUE).toInt()
 
     /**
-     * An separate entity that is centered on the hologram line (for clicking). This way if they click the actual line, they will be clicking an entity.
+     * A separate entity that is centered on the hologram line (for clicking). This way if they click the actual line,
+     * they will be clicking an entity.
      */
     @Expose
     val centeredEntityId = (Math.random() * Int.MAX_VALUE).toInt()

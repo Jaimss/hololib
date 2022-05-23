@@ -11,7 +11,7 @@ allprojects {
     apply plugin: "org.jetbrains.kotlin.jvm"
 
     group "dev.jaims.hololib"
-    version "0.0.14"
+    version "0.1.0"
 
     repositories {
         mavenCentral()
@@ -30,6 +30,10 @@ allprojects {
     }
     compileTestKotlin {
         kotlinOptions.jvmTarget = "15"
+    }
+
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 

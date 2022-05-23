@@ -136,6 +136,7 @@ data class HologramPage internal constructor(
     internal fun show(vararg player: Player) {
         linesData.forEach { line ->
             player.forEach { player ->
+                println("Showing line ${line.index} to ${player.uniqueId}")
                 sendShowPackets(line, player)
                 viewersData.add(player.uniqueId)
             }
@@ -150,6 +151,7 @@ data class HologramPage internal constructor(
     internal fun hide(vararg players: Player) {
         linesData.forEach { line ->
             players.forEach { player ->
+                println("Hiding line ${line.index} from ${player.uniqueId}")
                 sendHidePackets(line, player)
                 viewersData.remove(player.uniqueId)
             }

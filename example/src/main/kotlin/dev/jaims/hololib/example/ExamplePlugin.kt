@@ -3,7 +3,7 @@ package dev.jaims.hololib.example
 import dev.jaims.hololib.core.Hologram
 import dev.jaims.hololib.core.HololibManager
 import dev.jaims.hololib.example.command.*
-import dev.jaims.mcutils.bukkit.util.colorize
+import dev.jaims.mcutils.bukkit.func.colorize
 import org.bukkit.plugin.java.JavaPlugin
 
 class ExamplePlugin : JavaPlugin() {

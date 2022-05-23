@@ -12,7 +12,7 @@ class AddPage(private val plugin: ExamplePlugin) : CommandExecutor {
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        plugin.hologram?.addPage(*args.joinToString(" ").split("\n").toTypedArray())
+        plugin.hologram?.addPage(*args.joinToString(" ").split("\\n").toTypedArray())
         sender.sendMessage("Page Added")
         return true
     }
