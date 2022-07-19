@@ -22,7 +22,10 @@ allprojects {
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib"
         // implementation group: "it.unimi.dsi", name: "fastutil", version: "8.2.2"
+
+        testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
     }
+
 
     // kotlin options
     compileKotlin {

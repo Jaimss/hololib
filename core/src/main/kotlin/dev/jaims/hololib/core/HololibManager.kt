@@ -4,11 +4,15 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.EnumWrappers
+import dev.jaims.hololib.core.component.LEGACY_SERIALIZER
 import dev.jaims.hololib.core.event.HologramClickEvent
 import dev.jaims.hololib.core.listener.WorldSwitchEventListener
-import dev.jaims.hololib.core.util.protocolManager
+import dev.jaims.hololib.core.util.PacketManager
+import dev.jaims.hololib.core.util.PacketManager_1_18_2_R1
+import dev.jaims.hololib.core.util.PacketManager_1_19_R1
+import dev.jaims.hololib.core.version.BukkitVersion
+import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -16,12 +20,30 @@ class HololibManager(val plugin: JavaPlugin) {
 
     internal companion object {
         lateinit var instance: HololibManager
+        lateinit var packetManager: PacketManager
+    }
+
+    private fun getPacketManager(): PacketManager {
+        val bukkitVersion = BukkitVersion(plugin.server.bukkitVersion)
+        return when {
+            bukkitVersion >= BukkitVersion("1.19-R0.1-SNAPSHOT") -> PacketManager_1_19_R1()
+            bukkitVersion >= BukkitVersion("1.18.2-R0.1-SNAPSHOT") -> PacketManager_1_18_2_R1()
+            else -> {
+                plugin.logger.severe(
+                    "Hololib does not support bukkit version ${plugin.server.bukkitVersion}." +
+                            "Using latest as default. Proceed with caution, unexpected behavior may occur!"
+                )
+                PacketManager_1_19_R1()
+            }
+        }
     }
 
     init {
         instance = this
+        packetManager = getPacketManager()
+        plugin.logger.info("HoloLib using packet manager: ${packetManager::class.simpleName}...")
         plugin.server.pluginManager.registerEvents(WorldSwitchEventListener(this), plugin)
-        protocolManager.addPacketListener(
+        packetManager.protocolManager.addPacketListener(
             object : PacketAdapter(plugin, PacketType.Play.Client.USE_ENTITY) {
                 override fun onPacketReceiving(event: PacketEvent) {
                     // get some data
@@ -78,9 +100,13 @@ class HololibManager(val plugin: JavaPlugin) {
     /**
      * A transformation is what happens to every line whenever the [Hologram] is [Hologram.update]d. This allows
      * you to set placeholders on every update, colorize lines, use hex colors, or whatever you like.
+     *
+     * Since 7/19/22, this uses a [Component]. The default is to use the [LEGACY_SERIALIZER] to deserialize
+     * the content into a [Component]
      */
-    var lineTransformation: (player: Player, content: String) -> String =
-        { _, content -> ChatColor.translateAlternateColorCodes('&', content) }
+    var lineTransformation: (player: Player, content: String) -> Component = { _, content ->
+        LEGACY_SERIALIZER.deserialize(content)
+    }
 
     /**
      * If this is false, no code will run when a player clicks on a hologram unless you write a custom [HologramClickEvent]

@@ -1,13 +1,9 @@
 package dev.jaims.hololib.core
 
 import com.google.gson.annotations.Expose
-import dev.jaims.hololib.core.util.sendHidePackets
-import dev.jaims.hololib.core.util.sendShowPackets
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.*
-import javax.sound.sampled.Line
 
 @Suppress("MemberVisibilityCanBePrivate", "unused", "NAME_SHADOWING")
 data class HologramPage internal constructor(
@@ -136,7 +132,7 @@ data class HologramPage internal constructor(
     internal fun show(vararg player: Player) {
         linesData.forEach { line ->
             player.forEach { player ->
-                sendShowPackets(line, player)
+                HololibManager.packetManager.sendShowPackets(line, player)
                 viewersData.add(player.uniqueId)
             }
         }
@@ -150,7 +146,7 @@ data class HologramPage internal constructor(
     internal fun hide(vararg players: Player) {
         linesData.forEach { line ->
             players.forEach { player ->
-                sendHidePackets(line, player)
+                HololibManager.packetManager.sendHidePackets(line, player)
                 viewersData.remove(player.uniqueId)
             }
         }
