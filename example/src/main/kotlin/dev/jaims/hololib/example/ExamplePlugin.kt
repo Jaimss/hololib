@@ -3,7 +3,7 @@ package dev.jaims.hololib.example
 import dev.jaims.hololib.core.Hologram
 import dev.jaims.hololib.core.HololibManager
 import dev.jaims.hololib.example.command.*
-import dev.jaims.mcutils.bukkit.func.colorize
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.plugin.java.JavaPlugin
 
 class ExamplePlugin : JavaPlugin() {
@@ -14,8 +14,10 @@ class ExamplePlugin : JavaPlugin() {
     override fun onEnable() {
         logger.info("Starting Example Holograms Plugin")
 
+        val miniMessage = MiniMessage.miniMessage()
+
         val m = HololibManager(this)
-        m.lineTransformation = { player, content -> content.colorize(player) }
+        m.lineTransformation = { player, content -> miniMessage.deserialize(content) }
 
         AddPage(this)
         CreateHologram(this)

@@ -2,10 +2,9 @@ package dev.jaims.hololib.core
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import dev.jaims.hololib.core.util.sendHidePackets
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import java.util.UUID
+import java.util.*
 
 data class HologramLine internal constructor(
     var parent: Hologram,
@@ -70,7 +69,7 @@ data class HologramLine internal constructor(
      */
     internal fun despawn() {
         Bukkit.getOnlinePlayers().forEach {
-            sendHidePackets(this, it)
+            HololibManager.packetManager.sendHidePackets(this, it)
         }
     }
 
