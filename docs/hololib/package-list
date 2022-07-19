@@ -4,5 +4,7 @@ $dokka.linkExtension:html
 dev.jaims.hololib.core
 dev.jaims.hololib.core.builder
 dev.jaims.hololib.core.event
+dev.jaims.hololib.core.util
+dev.jaims.hololib.core.version
 dev.jaims.hololib.gson
 

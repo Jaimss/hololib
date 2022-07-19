@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.wrappers.EnumWrappers
-import dev.jaims.hololib.core.component.LEGACY_SERIALIZER
 import dev.jaims.hololib.core.event.HologramClickEvent
 import dev.jaims.hololib.core.listener.WorldSwitchEventListener
 import dev.jaims.hololib.core.util.PacketManager
@@ -12,11 +11,14 @@ import dev.jaims.hololib.core.util.PacketManager_1_18_2_R1
 import dev.jaims.hololib.core.util.PacketManager_1_19_R1
 import dev.jaims.hololib.core.version.BukkitVersion
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
 class HololibManager(val plugin: JavaPlugin) {
+
+    private val miniMessage = MiniMessage.miniMessage()
 
     internal companion object {
         lateinit var instance: HololibManager
@@ -101,11 +103,11 @@ class HololibManager(val plugin: JavaPlugin) {
      * A transformation is what happens to every line whenever the [Hologram] is [Hologram.update]d. This allows
      * you to set placeholders on every update, colorize lines, use hex colors, or whatever you like.
      *
-     * Since 7/19/22, this uses a [Component]. The default is to use the [LEGACY_SERIALIZER] to deserialize
-     * the content into a [Component]
+     * Since 7/19/22, this uses a [Component]. The default is to use Adventure's Mini Message to turn the
+     * content into a [Component]
      */
     var lineTransformation: (player: Player, content: String) -> Component = { _, content ->
-        LEGACY_SERIALIZER.deserialize(content)
+        miniMessage.deserialize(content)
     }
 
     /**
@@ -122,13 +124,13 @@ class HololibManager(val plugin: JavaPlugin) {
      * Set the default arrow left. You can change this for each individual hologram, this is just the default.
      * This will be put before the [defaultArrowRight]. You can use this to changethe message that shows at the bottom.
      */
-    var defaultArrowLeft: String = "&7&o(Left Click) &r&a<<< "
+    var defaultArrowLeft: String = "<gray>(<lang:key.mouse.left>) <green><bold><<< "
 
     /**
      * Set the default arrow right. You can change this for each individual hologram, this is just the default.
      * This will be put after the [defaultArrowRight]. You can use this to change the message that shows at the bottom.
      */
-    var defaultArrowRight: String = " &a>>> &7&o(Right Click)"
+    var defaultArrowRight: String = " <green><bold>>>> <reset><gray>(<lang:key.mouse.right>)"
 
     /**
      * Set the space between each [HologramLine]. 0.25 is the default and is fine in most cases.
